@@ -11,15 +11,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "categories")
-@Getter
-@Setter
-@NoArgsConstructor
 public class Category {
 
     @Id
@@ -47,4 +41,60 @@ public class Category {
 
     @Column(name = "schedule_locked", nullable = false)
     private boolean scheduleLocked = false;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Tournament getTournament() {
+        return tournament;
+    }
+
+    public void setTournament(Tournament tournament) {
+        this.tournament = tournament;
+    }
+
+    public CategoryName getName() {
+        return name;
+    }
+
+    public void setName(CategoryName name) {
+        this.name = name;
+    }
+
+    public MatchFormat getMatchFormat() {
+        return matchFormat;
+    }
+
+    public void setMatchFormat(MatchFormat matchFormat) {
+        this.matchFormat = matchFormat;
+    }
+
+    public Integer getSubMatchesCount() {
+        return subMatchesCount;
+    }
+
+    public void setSubMatchesCount(Integer subMatchesCount) {
+        this.subMatchesCount = subMatchesCount;
+    }
+
+    public CategoryPhase getPhase() {
+        return phase;
+    }
+
+    public void setPhase(CategoryPhase phase) {
+        this.phase = phase;
+    }
+
+    public boolean isScheduleLocked() {
+        return scheduleLocked;
+    }
+
+    public void setScheduleLocked(boolean scheduleLocked) {
+        this.scheduleLocked = scheduleLocked;
+    }
 }

@@ -11,15 +11,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "matches")
-@Getter
-@Setter
-@NoArgsConstructor
 public class Match {
 
     @Id
@@ -63,4 +57,92 @@ public class Match {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "winner_team_id")
     private Team winnerTeam;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public MatchPhase getPhase() {
+        return phase;
+    }
+
+    public void setPhase(MatchPhase phase) {
+        this.phase = phase;
+    }
+
+    public MatchdayRound getRound() {
+        return round;
+    }
+
+    public void setRound(MatchdayRound round) {
+        this.round = round;
+    }
+
+    public Integer getBracketRoundIndex() {
+        return bracketRoundIndex;
+    }
+
+    public void setBracketRoundIndex(Integer bracketRoundIndex) {
+        this.bracketRoundIndex = bracketRoundIndex;
+    }
+
+    public Integer getBracketSlot() {
+        return bracketSlot;
+    }
+
+    public void setBracketSlot(Integer bracketSlot) {
+        this.bracketSlot = bracketSlot;
+    }
+
+    public Team getHomeTeam() {
+        return homeTeam;
+    }
+
+    public void setHomeTeam(Team homeTeam) {
+        this.homeTeam = homeTeam;
+    }
+
+    public Team getAwayTeam() {
+        return awayTeam;
+    }
+
+    public void setAwayTeam(Team awayTeam) {
+        this.awayTeam = awayTeam;
+    }
+
+    public MatchStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MatchStatus status) {
+        this.status = status;
+    }
+
+    public MatchResultType getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(MatchResultType resultType) {
+        this.resultType = resultType;
+    }
+
+    public Team getWinnerTeam() {
+        return winnerTeam;
+    }
+
+    public void setWinnerTeam(Team winnerTeam) {
+        this.winnerTeam = winnerTeam;
+    }
 }
