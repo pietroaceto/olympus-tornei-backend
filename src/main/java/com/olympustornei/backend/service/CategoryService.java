@@ -2,6 +2,7 @@ package com.olympustornei.backend.service;
 
 import com.olympustornei.backend.domain.Category;
 import com.olympustornei.backend.domain.CategoryPhase;
+import com.olympustornei.backend.domain.CompetitionFormat;
 import com.olympustornei.backend.domain.MatchFormat;
 import com.olympustornei.backend.domain.Tournament;
 import com.olympustornei.backend.dto.CategoryRequest;
@@ -33,6 +34,7 @@ public class CategoryService {
         category.setName(request.name());
         category.setMatchFormat(request.matchFormat());
         category.setSubMatchesCount(resolveSubMatchesCount(request));
+        category.setCompetitionFormat(resolveCompetitionFormat(request));
         category.setPhase(CategoryPhase.GIRONE);
         category.setScheduleLocked(false);
         categoryRepository.save(category);
@@ -48,6 +50,7 @@ public class CategoryService {
         category.setName(request.name());
         category.setMatchFormat(request.matchFormat());
         category.setSubMatchesCount(resolveSubMatchesCount(request));
+        category.setCompetitionFormat(resolveCompetitionFormat(request));
         return toResponse(category);
     }
 
@@ -82,6 +85,10 @@ public class CategoryService {
         return request.subMatchesCount() != null && request.subMatchesCount() >= 1 ? request.subMatchesCount() : 1;
     }
 
+    private CompetitionFormat resolveCompetitionFormat(CategoryRequest request) {
+        return request.competitionFormat() != null ? request.competitionFormat() : CompetitionFormat.GIRONE;
+    }
+
     private CategoryResponse toResponse(Category category) {
         return new CategoryResponse(
                 category.getId(),
@@ -90,6 +97,7 @@ public class CategoryService {
                 category.getMatchFormat().name(),
                 category.getSubMatchesCount(),
                 category.getPhase().name(),
-                category.isScheduleLocked());
+                category.isScheduleLocked(),
+                category.getCompetitionFormat().name());
     }
 }

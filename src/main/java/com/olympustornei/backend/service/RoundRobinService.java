@@ -1,6 +1,7 @@
 package com.olympustornei.backend.service;
 
 import com.olympustornei.backend.domain.Category;
+import com.olympustornei.backend.domain.CompetitionFormat;
 import com.olympustornei.backend.domain.Match;
 import com.olympustornei.backend.domain.MatchPhase;
 import com.olympustornei.backend.domain.MatchStatus;
@@ -40,6 +41,10 @@ public class RoundRobinService {
 
     public List<RoundResponse> generateSchedule(Long categoryId) {
         Category category = categoryService.findEntity(categoryId);
+        if (category.getCompetitionFormat() == CompetitionFormat.TABELLONE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Categoria impostata su tabellone diretto: non prevede un girone");
+        }
         if (category.isScheduleLocked()) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Categoria bloccata: sono già stati inseriti risultati, rigenerare il calendario richiede un reset esplicito");

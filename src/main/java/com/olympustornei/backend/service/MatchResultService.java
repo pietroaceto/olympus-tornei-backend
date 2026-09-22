@@ -36,13 +36,16 @@ public class MatchResultService {
     private final SubMatchRepository subMatchRepository;
     private final SetScoreRepository setScoreRepository;
     private final PlayerRepository playerRepository;
+    private final BracketService bracketService;
 
     public MatchResultService(MatchRepository matchRepository, SubMatchRepository subMatchRepository,
-                               SetScoreRepository setScoreRepository, PlayerRepository playerRepository) {
+                               SetScoreRepository setScoreRepository, PlayerRepository playerRepository,
+                               BracketService bracketService) {
         this.matchRepository = matchRepository;
         this.subMatchRepository = subMatchRepository;
         this.setScoreRepository = setScoreRepository;
         this.playerRepository = playerRepository;
+        this.bracketService = bracketService;
     }
 
     public MatchDetailResponse submitResult(Long matchId, MatchResultRequest request) {
@@ -97,6 +100,11 @@ public class MatchResultService {
         if (match.getPhase() == MatchPhase.GIRONE) {
             if (!category.isScheduleLocked()) {
                 category.setScheduleLocked(true);
+            }
+            boolean gironeComplete = !matchRepository.existsByCategoryIdAndPhaseAndStatus(
+                    category.getId(), MatchPhase.GIRONE, MatchStatus.SCHEDULED);
+            if (gironeComplete && category.getPhase() == CategoryPhase.GIRONE) {
+                bracketService.generateAutoBracketFromGirone(category.getId());
             }
         } else {
             advanceWinner(category, match, winner);

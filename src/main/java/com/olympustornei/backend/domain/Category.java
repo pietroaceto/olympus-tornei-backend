@@ -45,6 +45,10 @@ public class Category {
     @Column(name = "bracket_total_rounds")
     private Integer bracketTotalRounds;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "competition_format", nullable = false, length = 20)
+    private CompetitionFormat competitionFormat = CompetitionFormat.GIRONE;
+
     public Long getId() {
         return id;
     }
@@ -107,5 +111,13 @@ public class Category {
 
     public void setBracketTotalRounds(Integer bracketTotalRounds) {
         this.bracketTotalRounds = bracketTotalRounds;
+    }
+
+    public CompetitionFormat getCompetitionFormat() {
+        return competitionFormat;
+    }
+
+    public void setCompetitionFormat(CompetitionFormat competitionFormat) {
+        this.competitionFormat = competitionFormat;
     }
 }

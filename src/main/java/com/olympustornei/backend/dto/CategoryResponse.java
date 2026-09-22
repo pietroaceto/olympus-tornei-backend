@@ -7,6 +7,7 @@ public record CategoryResponse(
         String matchFormat,
         Integer subMatchesCount,
         String phase,
-        boolean scheduleLocked
+        boolean scheduleLocked,
+        String competitionFormat
 ) {
 }

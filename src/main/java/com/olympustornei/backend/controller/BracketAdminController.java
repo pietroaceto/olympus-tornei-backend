@@ -2,6 +2,7 @@ package com.olympustornei.backend.controller;
 
 import com.olympustornei.backend.dto.BracketResponse;
 import com.olympustornei.backend.dto.GenerateBracketRequest;
+import com.olympustornei.backend.dto.ManualBracketRequest;
 import com.olympustornei.backend.service.BracketService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,16 @@ public class BracketAdminController {
     @PostMapping("/generate")
     public BracketResponse generate(@PathVariable Long categoryId, @Valid @RequestBody GenerateBracketRequest request) {
         return bracketService.generateBracket(categoryId, request.qualifiedCount());
+    }
+
+    @PostMapping("/generate-random")
+    public BracketResponse generateRandom(@PathVariable Long categoryId) {
+        return bracketService.generateRandomBracket(categoryId);
+    }
+
+    @PostMapping("/generate-manual")
+    public BracketResponse generateManual(@PathVariable Long categoryId, @Valid @RequestBody ManualBracketRequest request) {
+        return bracketService.generateManualBracket(categoryId, request.slots());
     }
 
     @PostMapping("/reset")

@@ -15,6 +15,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
     boolean existsByCategoryIdAndStatus(Long categoryId, MatchStatus status);
 
+    boolean existsByCategoryIdAndPhaseAndStatus(Long categoryId, MatchPhase phase, MatchStatus status);
+
     Optional<Match> findByCategoryIdAndPhaseAndBracketRoundIndexAndBracketSlot(
             Long categoryId, MatchPhase phase, Integer bracketRoundIndex, Integer bracketSlot);
 }
