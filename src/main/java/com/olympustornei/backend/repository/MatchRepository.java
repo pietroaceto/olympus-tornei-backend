@@ -1,0 +1,13 @@
+package com.olympustornei.backend.repository;
+
+import com.olympustornei.backend.domain.Match;
+import com.olympustornei.backend.domain.MatchPhase;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MatchRepository extends JpaRepository<Match, Long> {
+
+    List<Match> findByCategoryIdAndPhase(Long categoryId, MatchPhase phase);
+
+    boolean existsByCategoryIdAndPhase(Long categoryId, MatchPhase phase);
+}
