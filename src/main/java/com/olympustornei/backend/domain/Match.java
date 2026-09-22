@@ -38,12 +38,18 @@ public class Match {
     @Column(name = "bracket_slot")
     private Integer bracketSlot;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "home_team_id", nullable = false)
+    /**
+     * Nullable: in fase TABELLONE uno o entrambi gli avversari di un match dei
+     * round successivi al primo possono non essere ancora noti, in attesa del
+     * risultato del match che alimenta quello slot. In fase GIRONE sono
+     * sempre valorizzati alla creazione.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "home_team_id")
     private Team homeTeam;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "away_team_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "away_team_id")
     private Team awayTeam;
 
     @Enumerated(EnumType.STRING)

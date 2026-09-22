@@ -42,6 +42,9 @@ public class Category {
     @Column(name = "schedule_locked", nullable = false)
     private boolean scheduleLocked = false;
 
+    @Column(name = "bracket_total_rounds")
+    private Integer bracketTotalRounds;
+
     public Long getId() {
         return id;
     }
@@ -96,5 +99,13 @@ public class Category {
 
     public void setScheduleLocked(boolean scheduleLocked) {
         this.scheduleLocked = scheduleLocked;
+    }
+
+    public Integer getBracketTotalRounds() {
+        return bracketTotalRounds;
+    }
+
+    public void setBracketTotalRounds(Integer bracketTotalRounds) {
+        this.bracketTotalRounds = bracketTotalRounds;
     }
 }

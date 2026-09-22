@@ -1,7 +1,9 @@
 package com.olympustornei.backend.service;
 
 import com.olympustornei.backend.domain.Category;
+import com.olympustornei.backend.domain.CategoryPhase;
 import com.olympustornei.backend.domain.Match;
+import com.olympustornei.backend.domain.MatchPhase;
 import com.olympustornei.backend.domain.MatchResultType;
 import com.olympustornei.backend.domain.MatchStatus;
 import com.olympustornei.backend.domain.Player;
@@ -47,6 +49,11 @@ public class MatchResultService {
         Match match = findEntity(matchId);
         Category category = match.getCategory();
 
+        if (match.getHomeTeam() == null || match.getAwayTeam() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Il match non è ancora completo: una delle due squadre non è stata determinata");
+        }
+
         if (request.subMatches().size() != category.getSubMatchesCount()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Numero di sotto-partite non valido: la categoria richiede " + category.getSubMatchesCount());
@@ -87,11 +94,41 @@ public class MatchResultService {
         match.setResultType(request.resultType());
         match.setWinnerTeam(winner);
 
-        if (!category.isScheduleLocked()) {
-            category.setScheduleLocked(true);
+        if (match.getPhase() == MatchPhase.GIRONE) {
+            if (!category.isScheduleLocked()) {
+                category.setScheduleLocked(true);
+            }
+        } else {
+            advanceWinner(category, match, winner);
         }
 
         return toDetailResponse(match);
+    }
+
+    /**
+     * Propaga il vincitore di un match di fase TABELLONE allo slot del round
+     * successivo (creato in anticipo da {@link BracketService} alla
+     * generazione del tabellone). Se il match appena giocato era la finale,
+     * la categoria passa a CONCLUSA.
+     */
+    private void advanceWinner(Category category, Match match, Team winner) {
+        int nextRound = match.getBracketRoundIndex() + 1;
+        if (category.getBracketTotalRounds() == null || nextRound >= category.getBracketTotalRounds()) {
+            category.setPhase(CategoryPhase.CONCLUSA);
+            return;
+        }
+        int nextSlot = match.getBracketSlot() / 2;
+        boolean isHomeSide = match.getBracketSlot() % 2 == 0;
+        Match nextMatch = matchRepository
+                .findByCategoryIdAndPhaseAndBracketRoundIndexAndBracketSlot(
+                        category.getId(), MatchPhase.TABELLONE, nextRound, nextSlot)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Match del round successivo non trovato: dovrebbe essere stato pre-creato alla generazione del tabellone"));
+        if (isHomeSide) {
+            nextMatch.setHomeTeam(winner);
+        } else {
+            nextMatch.setAwayTeam(winner);
+        }
     }
 
     @Transactional(readOnly = true)
@@ -165,10 +202,10 @@ public class MatchResultService {
                 match.getId(),
                 match.getCategory().getId(),
                 match.getPhase().name(),
-                match.getHomeTeam().getId(),
-                match.getHomeTeam().getName(),
-                match.getAwayTeam().getId(),
-                match.getAwayTeam().getName(),
+                match.getHomeTeam() != null ? match.getHomeTeam().getId() : null,
+                match.getHomeTeam() != null ? match.getHomeTeam().getName() : null,
+                match.getAwayTeam() != null ? match.getAwayTeam().getId() : null,
+                match.getAwayTeam() != null ? match.getAwayTeam().getName() : null,
                 match.getStatus().name(),
                 match.getResultType() != null ? match.getResultType().name() : null,
                 match.getWinnerTeam() != null ? match.getWinnerTeam().getId() : null,

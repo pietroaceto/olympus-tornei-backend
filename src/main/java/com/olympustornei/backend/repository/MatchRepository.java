@@ -4,6 +4,7 @@ import com.olympustornei.backend.domain.Match;
 import com.olympustornei.backend.domain.MatchPhase;
 import com.olympustornei.backend.domain.MatchStatus;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MatchRepository extends JpaRepository<Match, Long> {
@@ -13,4 +14,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     boolean existsByCategoryIdAndPhase(Long categoryId, MatchPhase phase);
 
     boolean existsByCategoryIdAndStatus(Long categoryId, MatchStatus status);
+
+    Optional<Match> findByCategoryIdAndPhaseAndBracketRoundIndexAndBracketSlot(
+            Long categoryId, MatchPhase phase, Integer bracketRoundIndex, Integer bracketSlot);
 }
