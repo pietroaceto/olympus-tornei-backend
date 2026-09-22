@@ -89,6 +89,13 @@ public class RoundRobinService {
         return response;
     }
 
+    public void resetGirone(Long categoryId) {
+        Category category = categoryService.findEntity(categoryId);
+        List<MatchdayRound> existingRounds = matchdayRoundRepository.findByCategoryIdOrderByRoundNumberAsc(categoryId);
+        matchdayRoundRepository.deleteAll(existingRounds);
+        category.setScheduleLocked(false);
+    }
+
     @Transactional(readOnly = true)
     public List<RoundResponse> getSchedule(Long categoryId) {
         categoryService.findEntity(categoryId);
