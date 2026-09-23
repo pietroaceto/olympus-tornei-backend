@@ -1,5 +1,7 @@
 package com.olympustornei.backend.dto;
 
+import java.util.List;
+
 public record BracketMatchResponse(
         Long matchId,
         Integer slot,
@@ -9,6 +11,7 @@ public record BracketMatchResponse(
         String awayTeamName,
         String status,
         String resultType,
-        Long winnerTeamId
+        Long winnerTeamId,
+        List<MatchSubMatchScoreResponse> subMatches
 ) {
 }

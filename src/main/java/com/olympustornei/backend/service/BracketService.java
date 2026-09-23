@@ -56,13 +56,16 @@ public class BracketService {
     private final TeamRepository teamRepository;
     private final MatchRepository matchRepository;
     private final StandingsService standingsService;
+    private final MatchScoreService matchScoreService;
 
     public BracketService(CategoryService categoryService, TeamRepository teamRepository,
-                           MatchRepository matchRepository, StandingsService standingsService) {
+                           MatchRepository matchRepository, StandingsService standingsService,
+                           MatchScoreService matchScoreService) {
         this.categoryService = categoryService;
         this.teamRepository = teamRepository;
         this.matchRepository = matchRepository;
         this.standingsService = standingsService;
+        this.matchScoreService = matchScoreService;
     }
 
     public BracketResponse generateBracket(Long categoryId, int qualifiedCount) {
@@ -297,6 +300,7 @@ public class BracketService {
                 match.getAwayTeam() != null ? match.getAwayTeam().getName() : null,
                 match.getStatus().name(),
                 match.getResultType() != null ? match.getResultType().name() : null,
-                match.getWinnerTeam() != null ? match.getWinnerTeam().getId() : null);
+                match.getWinnerTeam() != null ? match.getWinnerTeam().getId() : null,
+                matchScoreService.buildSubMatchScores(match));
     }
 }
