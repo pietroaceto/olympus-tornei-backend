@@ -6,17 +6,22 @@ import com.olympustornei.backend.domain.Match;
 import com.olympustornei.backend.domain.MatchPhase;
 import com.olympustornei.backend.domain.MatchStatus;
 import com.olympustornei.backend.domain.MatchdayRound;
+import com.olympustornei.backend.domain.SetScore;
+import com.olympustornei.backend.domain.SubMatch;
 import com.olympustornei.backend.domain.Team;
 import com.olympustornei.backend.dto.MatchResponse;
 import com.olympustornei.backend.dto.RoundResponse;
 import com.olympustornei.backend.repository.MatchRepository;
 import com.olympustornei.backend.repository.MatchdayRoundRepository;
+import com.olympustornei.backend.repository.SetScoreRepository;
+import com.olympustornei.backend.repository.SubMatchRepository;
 import com.olympustornei.backend.repository.TeamRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +35,18 @@ public class RoundRobinService {
     private final TeamRepository teamRepository;
     private final MatchdayRoundRepository matchdayRoundRepository;
     private final MatchRepository matchRepository;
+    private final SubMatchRepository subMatchRepository;
+    private final SetScoreRepository setScoreRepository;
 
     public RoundRobinService(CategoryService categoryService, TeamRepository teamRepository,
-                              MatchdayRoundRepository matchdayRoundRepository, MatchRepository matchRepository) {
+                              MatchdayRoundRepository matchdayRoundRepository, MatchRepository matchRepository,
+                              SubMatchRepository subMatchRepository, SetScoreRepository setScoreRepository) {
         this.categoryService = categoryService;
         this.teamRepository = teamRepository;
         this.matchdayRoundRepository = matchdayRoundRepository;
         this.matchRepository = matchRepository;
+        this.subMatchRepository = subMatchRepository;
+        this.setScoreRepository = setScoreRepository;
     }
 
     public List<RoundResponse> generateSchedule(Long categoryId) {
@@ -128,6 +138,25 @@ public class RoundRobinService {
                 match.getAwayTeam().getName(),
                 match.getStatus().name(),
                 match.getResultType() != null ? match.getResultType().name() : null,
-                match.getWinnerTeam() != null ? match.getWinnerTeam().getId() : null);
+                match.getWinnerTeam() != null ? match.getWinnerTeam().getId() : null,
+                buildResultSummary(match));
+    }
+
+    private String buildResultSummary(Match match) {
+        if (match.getStatus() != MatchStatus.PLAYED) {
+            return null;
+        }
+        List<SubMatch> subMatches = subMatchRepository.findByMatchIdOrderByOrdineAsc(match.getId());
+        List<String> subMatchSummaries = new ArrayList<>();
+        for (SubMatch subMatch : subMatches) {
+            List<SetScore> sets = setScoreRepository.findBySubMatchIdOrderBySetNumberAsc(subMatch.getId());
+            String setsSummary = sets.stream()
+                    .map(s -> s.getHomeGames() + "-" + s.getAwayGames())
+                    .collect(Collectors.joining(", "));
+            if (!setsSummary.isEmpty()) {
+                subMatchSummaries.add(setsSummary);
+            }
+        }
+        return subMatchSummaries.isEmpty() ? null : String.join(" | ", subMatchSummaries);
     }
 }
