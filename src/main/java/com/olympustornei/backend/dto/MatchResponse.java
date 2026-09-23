@@ -6,6 +6,8 @@ public record MatchResponse(
         String homeTeamName,
         Long awayTeamId,
         String awayTeamName,
-        String status
+        String status,
+        String resultType,
+        Long winnerTeamId
 ) {
 }

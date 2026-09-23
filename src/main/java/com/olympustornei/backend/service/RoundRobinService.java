@@ -126,6 +126,8 @@ public class RoundRobinService {
                 match.getHomeTeam().getName(),
                 match.getAwayTeam().getId(),
                 match.getAwayTeam().getName(),
-                match.getStatus().name());
+                match.getStatus().name(),
+                match.getResultType() != null ? match.getResultType().name() : null,
+                match.getWinnerTeam() != null ? match.getWinnerTeam().getId() : null);
     }
 }
