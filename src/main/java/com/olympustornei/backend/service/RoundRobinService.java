@@ -10,7 +10,9 @@ import com.olympustornei.backend.domain.SetScore;
 import com.olympustornei.backend.domain.SubMatch;
 import com.olympustornei.backend.domain.Team;
 import com.olympustornei.backend.dto.MatchResponse;
+import com.olympustornei.backend.dto.MatchSubMatchScoreResponse;
 import com.olympustornei.backend.dto.RoundResponse;
+import com.olympustornei.backend.dto.SetScoreResponse;
 import com.olympustornei.backend.repository.MatchRepository;
 import com.olympustornei.backend.repository.MatchdayRoundRepository;
 import com.olympustornei.backend.repository.SetScoreRepository;
@@ -21,7 +23,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,24 +140,24 @@ public class RoundRobinService {
                 match.getStatus().name(),
                 match.getResultType() != null ? match.getResultType().name() : null,
                 match.getWinnerTeam() != null ? match.getWinnerTeam().getId() : null,
-                buildResultSummary(match));
+                buildSubMatchScores(match));
     }
 
-    private String buildResultSummary(Match match) {
+    private List<MatchSubMatchScoreResponse> buildSubMatchScores(Match match) {
         if (match.getStatus() != MatchStatus.PLAYED) {
-            return null;
+            return List.of();
         }
         List<SubMatch> subMatches = subMatchRepository.findByMatchIdOrderByOrdineAsc(match.getId());
-        List<String> subMatchSummaries = new ArrayList<>();
+        List<MatchSubMatchScoreResponse> result = new ArrayList<>();
         for (SubMatch subMatch : subMatches) {
             List<SetScore> sets = setScoreRepository.findBySubMatchIdOrderBySetNumberAsc(subMatch.getId());
-            String setsSummary = sets.stream()
-                    .map(s -> s.getHomeGames() + "-" + s.getAwayGames())
-                    .collect(Collectors.joining(", "));
-            if (!setsSummary.isEmpty()) {
-                subMatchSummaries.add(setsSummary);
+            List<SetScoreResponse> setResponses = sets.stream()
+                    .map(s -> new SetScoreResponse(s.getSetNumber(), s.getHomeGames(), s.getAwayGames()))
+                    .toList();
+            if (!setResponses.isEmpty()) {
+                result.add(new MatchSubMatchScoreResponse(subMatch.getOrdine(), setResponses));
             }
         }
-        return subMatchSummaries.isEmpty() ? null : String.join(" | ", subMatchSummaries);
+        return result;
     }
 }

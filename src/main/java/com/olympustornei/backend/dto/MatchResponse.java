@@ -1,5 +1,7 @@
 package com.olympustornei.backend.dto;
 
+import java.util.List;
+
 public record MatchResponse(
         Long id,
         Long homeTeamId,
@@ -9,6 +11,6 @@ public record MatchResponse(
         String status,
         String resultType,
         Long winnerTeamId,
-        String resultSummary
+        List<MatchSubMatchScoreResponse> subMatches
 ) {
 }
